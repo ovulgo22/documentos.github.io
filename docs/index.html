@@ -3,26 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Simulator</title>
+  <title>Clicker Simulator PRO</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>Clicker Simulator</h1>
-
-  <div id="game-container">
-    <button id="clickButton">💰</button>
+  <header>
+    <h1>Clicker Simulator PRO</h1>
     <div id="points">Moedas: 0</div>
-  </div>
+  </header>
 
-  <div class="upgrades">
-    <button class="upgrade" id="upgrade1">Upgrade x2 (100 moedas)</button>
-    <button class="upgrade" id="autoClick">AutoClicker (500 moedas)</button>
-  </div>
+  <main id="game-container">
+    <button id="clickButton">💰</button>
 
-  <div id="achievements">
-    <h2>Conquistas</h2>
-    <ul id="achievementsList"></ul>
-  </div>
+    <section class="upgrades-section">
+      <h2>Upgrades</h2>
+      <div class="upgrades" id="upgradeList"></div>
+    </section>
+
+    <section class="achievements-section">
+      <h2>Conquistas</h2>
+      <ul id="achievementsList"></ul>
+    </section>
+
+    <section class="events-section">
+      <h2>Eventos</h2>
+      <div id="eventMessage">Nenhum evento ativo</div>
+    </section>
+  </main>
+
+  <audio id="coinSound" src="https://www.soundjay.com/coin/sounds/coin-1.mp3"></audio>
 
   <script src="script.js"></script>
 </body>
