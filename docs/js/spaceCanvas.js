@@ -1,2 +1,0 @@
-
-// Fundo animado espacial
