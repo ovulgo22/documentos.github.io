@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clicker Simulator Espacial AAA Ultra</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="menu">
+    <h1>Clicker Simulator Espacial AAA Ultra</h1>
+    <button id="startGame">Iniciar Jogo</button>
+    <button id="openLeaderboard">Leaderboard</button>
+    <button id="openAchievements">Conquistas</button>
+    <button id="openPrestige">Prestígio</button>
+</div>
+<div id="game" style="display:none;">
+    <div id="hud">
+        <div id="points">Energia Cósmica: 0</div>
+        <div id="multiplier">Multiplicador: x1</div>
+        <div id="prestige">Prestígio: 0</div>
+        <div id="equippedItem">Item Equipado: Nenhum</div>
+    </div>
+    <button id="clickButton">🌑 Clique!</button>
+    <div id="orbitalUpgrades"></div>
+    <div id="boosts"></div>
+    <div id="achievementsList"></div>
+    <button id="prestigeBtn">Prestígio Cósmico</button>
+    <div id="leaderboardContainer" style="display:none;"></div>
+</div>
+<audio id="coinSound" src="assets/sounds/coin.mp3"></audio>
+<audio id="boostSound" src="assets/sounds/boost.mp3"></audio>
+<audio id="eventSound" src="assets/sounds/event.mp3"></audio>
+<script src="js/spaceCanvas.js"></script>
+<script src="js/particles.js"></script>
+<script src="js/mainMenu.js"></script>
+<script src="js/click.js"></script>
+<script src="js/upgrades.js"></script>
+<script src="js/autoclick.js"></script>
+<script src="js/events.js"></script>
+<script src="js/achievements.js"></script>
+<script src="js/prestige.js"></script>
+<script src="js/customization.js"></script>
+<script src="js/leaderboard.js"></script>
+<script src="js/sound.js"></script>
+</body>
+</html>
