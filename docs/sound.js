@@ -1,9 +1,9 @@
-// Todos os efeitos de som já carregados no index.html
-// click.js → coinSound
-// autoclick.js → boostSound
-// events.js → eventSound
+// Sons já carregados via index.html
+// Coin, Boost, Event, Prestígio
+// Podem ser adicionados mais futuramente para upgrades, conquistas e eventos especiais
 
-// Aqui você poderia adicionar sons extras, como:
-// Prestígio
-const prestigeSound = new Audio('https://www.soundjay.com/button/sounds/button-09.mp3');
-prestigeBtn.addEventListener('click', ()=>prestigeSound.play());
+// Exemplo de som extra para upgrade
+function playUpgradeSound(){
+    const s = new Audio('https://www.soundjay.com/button/sounds/button-5.mp3');
+    s.play();
+}
