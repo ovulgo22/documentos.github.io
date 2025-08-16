@@ -1,16 +1,66 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Agar.io Off-line</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu GitHub Docs</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<canvas id="game"></canvas>
-<div id="leaderboard"><h2>Leaderboard</h2><ul id="leaders"></ul></div>
-<div id="splitBtn" class="button">DIVIDIR</div>
-<div id="shootBtn" class="button">EJETAR</div>
-<script src="client.js"></script>
+    <header>
+        <div class="logo">MeuDocs</div>
+        <input type="text" placeholder="Pesquisar..." id="searchInput">
+    </header>
+
+    <div class="container">
+        <nav class="sidebar">
+            <ul>
+                <li><a href="#inicio">Início</a></li>
+                <li><a href="#git">Git</a></li>
+                <li><a href="#github">GitHub</a></li>
+                <li><a href="#pages">GitHub Pages</a></li>
+                <li><a href="#actions">GitHub Actions</a></li>
+                <li><a href="#api">API REST</a></li>
+            </ul>
+        </nav>
+
+        <main class="content">
+            <section id="inicio">
+                <h1>Bem-vindo ao Meu GitHub Docs</h1>
+                <p>Este é um site de documentação inspirado no GitHub Docs, totalmente funcional para GitHub Pages.</p>
+            </section>
+
+            <section id="git">
+                <h2>Git</h2>
+                <p>Aprenda conceitos básicos de Git, como commits, branches e merges.</p>
+            </section>
+
+            <section id="github">
+                <h2>GitHub</h2>
+                <p>Descubra como criar repositórios, colaborar em projetos e gerenciar código com GitHub.</p>
+            </section>
+
+            <section id="pages">
+                <h2>GitHub Pages</h2>
+                <p>Crie sites estáticos diretamente do seu repositório GitHub.</p>
+            </section>
+
+            <section id="actions">
+                <h2>GitHub Actions</h2>
+                <p>Automatize fluxos de trabalho com CI/CD usando GitHub Actions.</p>
+            </section>
+
+            <section id="api">
+                <h2>API REST</h2>
+                <p>Integre e automatize tarefas com a API REST do GitHub.</p>
+            </section>
+        </main>
+    </div>
+
+    <footer>
+        <p>© 2025 Meu GitHub Docs</p>
+    </footer>
+
+    <script src="script.js"></script>
 </body>
 </html>
