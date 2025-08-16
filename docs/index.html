@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Evolution Infinity</title>
+<style>
+  body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to bottom, #0d0d0d, #1a1a1a);
+    color: #f0f0f0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  h1 { margin: 20px; }
+  #dna-counter { font-size: 1.5em; margin: 10px; }
+  #click-btn {
+    font-size: 1.5em;
+    padding: 20px 40px;
+    margin: 10px;
+    border-radius: 15px;
+    border: none;
+    background-color: #1e90ff;
+    color: #fff;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  #click-btn:active { transform: scale(0.95); }
+  #upgrades { display: flex; flex-wrap: wrap; justify-content: center; margin: 10px; }
+  .upgrade {
+    background: #333;
+    padding: 15px;
+    margin: 10px;
+    border-radius: 12px;
+    min-width: 150px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  .upgrade.unlocked { background: #28a745; color: #fff; }
+  #event-log { max-width: 400px; margin: 10px; text-align: center; font-size: 0.9em; min-height: 50px; }
+  #organism-img { max-width: 200px; margin: 10px; }
+</style>
+</head>
+<body>
+
+<h1>Evolution Infinity</h1>
+<div id="dna-counter">DNA: 0</div>
+<button id="click-btn">Gerar DNA</button>
+<img id="organism-img" src="https://i.imgur.com/8bUq9Hs.png" alt="Organismo">
+<div id="upgrades"></div>
+<div id="event-log"></div>
+
+<script>
+// ===== Dados do Jogo =====
+let dna = parseFloat(localStorage.getItem('dna')) || 0;
+let dnaPerClick = 1;
+let dnaPerSecond = 0.1;
+
+const upgrades = [
+  {name: 'Célula Multicelular', cost: 100, unlocked: false, img: 'https://i.imgur.com/Qr0s9tZ.png'},
+  {name: 'Peixe', cost: 500, unlocked: false, img: 'https://i.imgur.com/4vPzJzi.png'},
+  {name: 'Dinossauro', cost: 2000, unlocked: false, img: 'https://i.imgur.com/7t5VY8J.png'},
+  {name: 'Mamífero', cost: 5000, unlocked: false, img: 'https://i.imgur.com/Ek2vWni.png'},
+  {name: 'Humano', cost: 15000, unlocked: false, img: 'https://i.imgur.com/q4V2GfZ.png'},
+  {name: 'Singularidade IA', cost: 50000, unlocked: false, img: 'https://i.imgur.com/0H6hG2Q.png'},
+];
+
+// ===== Funções =====
+function updateUI() {
+  document.getElementById('dna-counter').innerText = `DNA: ${Math.floor(dna)}`;
+  const upgradesDiv = document.getElementById('upgrades');
+  upgradesDiv.innerHTML = '';
+  upgrades.forEach((u, index) => {
+    const div = document.createElement('div');
+    div.className = 'upgrade' + (u.unlocked ? ' unlocked' : '');
+    div.innerText = `${u.name}\nCusto: ${u.cost}`;
+    div.onclick = () => buyUpgrade(index);
+    upgradesDiv.appendChild(div);
+  });
+}
+
+function addDNA(amount) {
+  dna += amount;
+  updateUI();
+  localStorage.setItem('dna', dna);
+}
+
+function clickDNA() { addDNA(dnaPerClick); }
+
+function autoDNA() {
+  addDNA(dnaPerSecond);
+  requestAnimationFrame(autoDNA);
+}
+
+function buyUpgrade(index) {
+  const u = upgrades[index];
+  if(dna >= u.cost && !u.unlocked){
+    dna -= u.cost;
+    u.unlocked = true;
+    dnaPerClick += u.cost * 0.001;
+    dnaPerSecond += u.cost * 0.0005;
+    document.getElementById('organism-img').src = u.img;
+    addEvent(`Upgrade desbloqueado: ${u.name}!`);
+    updateUI();
+  }
+}
+
+function addEvent(text) {
+  const log = document.getElementById('event-log');
+  log.innerText = text;
+  setTimeout(() => { log.innerText = ''; }, 5000);
+}
+
+// Eventos aleatórios
+function randomEvent() {
+  const events = [
+    {text: 'Mutaçao! DNA extra ganho!', effect: () => addDNA(50)},
+    {text: 'Catástrofe! Perdeu metade do DNA!', effect: () => { dna /= 2; updateUI(); }},
+  ];
+  const e = events[Math.floor(Math.random() * events.length)];
+  e.effect();
+  addEvent(e.text);
+  setTimeout(randomEvent, 30000);
+}
+
+// ===== Inicialização =====
+document.getElementById('click-btn').addEventListener('click', clickDNA);
+updateUI();
+autoDNA();
+randomEvent();
+</script>
+
+</body>
+</html>
