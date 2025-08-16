@@ -13,6 +13,7 @@ function checkAchievements(){
         if(points>=m.points && !achievements.includes(m.text)){
             achievements.push(m.text);
             alert(`🏆 Conquista desbloqueada: ${m.text}`);
+            spawnParticles(clickButton.offsetLeft+100,clickButton.offsetTop+100,20);
             renderAchievements();
         }
     });
@@ -28,5 +29,4 @@ function renderAchievements(){
     });
 }
 
-// Verificação periódica
 setInterval(checkAchievements,1000);
