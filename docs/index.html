@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Simulator Espacial</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clicker Simulator Espacial AAA</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <canvas id="spaceCanvas"></canvas>
   <header>
     <h1>Clicker Simulator Espacial</h1>
     <div id="points">Energia Cósmica: 0</div>
@@ -14,16 +15,14 @@
   </header>
 
   <main id="game-container">
-    <button id="clickButton">🌑</button>
+    <div id="clickArea">
+      <button id="clickButton">🌑</button>
+      <div id="orbitalUpgrades"></div>
+    </div>
 
     <section class="boosts-section">
       <h2>Boosts Temporários</h2>
       <div id="boosts"></div>
-    </section>
-
-    <section class="upgrades-section">
-      <h2>Árvore de Upgrades</h2>
-      <div id="upgradeList"></div>
     </section>
 
     <section class="achievements-section">
@@ -42,7 +41,8 @@
   <audio id="boostSound" src="https://www.soundjay.com/button/sounds/button-3.mp3"></audio>
   <audio id="eventSound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
 
-  <!-- Scripts separados -->
+  <!-- Scripts -->
+  <script src="spaceCanvas.js"></script>
   <script src="click.js"></script>
   <script src="upgrades.js"></script>
   <script src="autoclick.js"></script>
