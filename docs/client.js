@@ -33,13 +33,9 @@ class Cell {
     ctx.beginPath();
     ctx.arc(this.x - camX, this.y - camY, this.radius, 0, Math.PI * 2);
     ctx.fill();
-
-    // Borda branca suave
     ctx.strokeStyle = "rgba(255,255,255,0.5)";
     ctx.lineWidth = 2;
     ctx.stroke();
-
-    // Nome do jogador
     ctx.fillStyle = 'white';
     ctx.font = `${Math.max(12, this.radius / 2)}px Arial`;
     ctx.textAlign = 'center';
@@ -101,8 +97,6 @@ class BotMultiCell {
     this.ejectCooldown = Math.max(0, this.ejectCooldown - 1);
     this.cells.forEach(cell => {
       let target = null;
-
-      // Ameaças
       const threats = [...world.bots.flatMap(b => b.cells), ...world.player.cells]
         .filter(c => c !== cell && c.radius > cell.radius*1.1);
       if(threats.length>0){
@@ -110,20 +104,15 @@ class BotMultiCell {
         const dx = cell.x - threat.x; const dy = cell.y - threat.y;
         cell.move(dx,dy); return;
       }
-
-      // Presas
       const prey = [...world.bots.flatMap(b => b.cells), ...world.player.cells]
         .filter(c => c!==cell && c.radius*1.1<cell.radius);
       if(prey.length>0) target = prey.reduce((a,b)=>Math.hypot(cell.x-a.x,cell.y-a.y)<Math.hypot(cell.x-b.x,cell.y-b.y)?a:b);
-
       if(!target && world.pellets.length>0) target = world.pellets.reduce((a,b)=>Math.hypot(cell.x-a.x,cell.y-a.y)<Math.hypot(cell.x-b.x,cell.y-b.y)?a:b);
-
       if(target){
         let dx = target.x-cell.x, dy = target.y-cell.y; const dist = Math.hypot(dx,dy);
         if(dist>0){dx/=dist; dy/=dist;}
         let speedFactor = (prey.length>0 && target.radius<cell.radius/1.5)?2:1;
         cell.move(dx*speedFactor,dy*speedFactor);
-
         if(prey.length>0 && this.splitCooldown===0 && target.radius<cell.radius/2 && dist<cell.radius*3){
           this.splitCell(cell,target); this.splitCooldown=100;
         }
@@ -174,19 +163,22 @@ function init(){
 
 // ----- UPDATE -----
 function update(){
+  // Respawn automático
+  if(world.player.cells.length===0){
+    const rx = Math.random()*(world.width-60)+30;
+    const ry = Math.random()*(world.height-60)+30;
+    world.player=new PlayerMultiCell("Você","#00f",rx,ry,30);
+  }
+
   let dx=0,dy=0;
   if(touchX!==null && touchY!==null){ dx=touchX-canvas.width/2; dy=touchY-canvas.height/2; }
   world.player.move(dx,dy);
   world.bots.forEach(bot=>bot.ai());
 
-  // Comer pellets
   world.pellets=world.pellets.filter(p=>![...world.player.cells,...world.bots.flatMap(b=>b.cells)].some(c=>c.eat(p)));
-
-  // Ejected
   world.ejected.forEach(e=>{ [...world.player.cells,...world.bots.flatMap(b=>b.cells)].forEach(c=>{if(c.eat(e)) e.radius=0;}); e.move(); });
   world.ejected = world.ejected.filter(e=>e.radius>0);
 
-  // Colisão entre células
   const allCells=[...world.player.cells,...world.bots.flatMap(b=>b.cells)];
   allCells.forEach(c1=>allCells.forEach(c2=>{if(c1!==c2 && c1.radius>c2.radius*1.1){ const dist=Math.hypot(c1.x-c2.x,c1.y-c2.y); if(dist<c1.radius){c1.radius+=c2.radius*0.9; c2.radius=0;}}}));
   world.bots.forEach(bot=>bot.cells=bot.cells.filter(c=>c.radius>0));
@@ -200,46 +192,53 @@ function draw(){
   const playerSize=Math.max(...world.player.cells.map(c=>c.radius));
   const zoom=Math.min(1,50/playerSize);
   ctx.save(); ctx.scale(zoom,zoom);
-
   const camX=world.player.cells[0].x-canvas.width/2/zoom;
   const camY=world.player.cells[0].y-canvas.height/2/zoom;
 
-  // Background simples
   ctx.fillStyle="#f2f2f2"; ctx.fillRect(0,0,world.width,world.height);
 
   world.pellets.forEach(p=>p.draw(ctx,camX,camY));
   world.ejected.forEach(e=>e.draw(ctx,camX,camY));
   [...world.player.cells,...world.bots.flatMap(b=>b.cells)].forEach(c=>c.draw(ctx,camX,camY));
 
+  // ----- SETA PARA BOT MAIS PRÓXIMO -----
+  if(world.player.cells.length>0){
+    const px = world.player.cells[0].x, py = world.player.cells[0].y;
+    let nearest = null, ndist = Infinity;
+    world.bots.flatMap(b=>b.cells).forEach(c=>{
+      const d=Math.hypot(c.x-px,c.y-py);
+      if(d<ndist){ndist=d; nearest=c;}
+    });
+    if(nearest){
+      const angle=Math.atan2(nearest.y-py,nearest.x-px);
+      const centerX=canvas.width/2, centerY=canvas.height/2;
+      ctx.restore();
+      ctx.save();
+      ctx.translate(centerX, centerY);
+      ctx.rotate(angle);
+      ctx.fillStyle='rgba(255,0,0,0.7)';
+      ctx.beginPath();
+      ctx.moveTo(0,-20);
+      ctx.lineTo(10,10);
+      ctx.lineTo(-10,10);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+      ctx.save();
+      ctx.scale(zoom,zoom);
+    }
+  }
+
+  // ----- LEADERBOARD -----
   const leaders=document.getElementById('leaders'); leaders.innerHTML='';
-  [...world.player.cells,...world.bots.flatMap(b=>b.cells)].sort((a,b)=>b.radius-a.radius).slice(0,10).forEach(c=>{const li=document.createElement('li'); li.textContent=`${c.name} (${Math.round(c.radius)})`; leaders.appendChild(li);});
+  [...world.player.cells.map(c=>({...c,name:"Você",isPlayer:true})), ...world.bots.flatMap(b=>b.cells.map(c=>({...c,name:c.name,isPlayer:false})))]
+    .sort((a,b)=>b.radius-a.radius)
+    .slice(0,10)
+    .forEach(c=>{
+      const li=document.createElement('li'); 
+      li.textContent=`${c.name} (${Math.round(c.radius)})`; 
+      li.style.color=c.isPlayer?'blue':'red';
+      leaders.appendChild(li);
+    });
 
-  ctx.restore();
-}
-
-// ----- LOOP -----
-function loop(){update(); draw(); requestAnimationFrame(loop);}
-init(); loop();
-
-// ----- TOUCH CONTROLS -----
-canvas.addEventListener('touchstart', e=>{touchX=e.touches[0].clientX; touchY=e.touches[0].clientY;});
-canvas.addEventListener('touchmove', e=>{ e.preventDefault(); touchX=e.touches[0].clientX; touchY=e.touches[0].clientY; });
-canvas.addEventListener('touchend', e=>{ touchX=null; touchY=null; });
-
-// ----- BUTTONS -----
-document.getElementById('splitBtn').addEventListener('touchstart',()=>world.player.split());
-document.getElementById('shootBtn').addEventListener('touchstart',()=>world.player.cells.forEach(c=>ejectMass(c)));
-
-// ----- EJECT -----
-function ejectMass(cell,dx=null,dy=null){
-  let angle=Math.random()*Math.PI*2;
-  if(dx!==null && dy!==null) angle=Math.atan2(dy,dx);
-  const speed=5;
-  const vx=Math.cos(angle)*speed;
-  const vy=Math.sin(angle)*speed;
-  world.ejected.push(new Ejected(cell.x+vx*2,cell.y+vy*2,5,"#0f0",vx,vy));
-  cell.radius=Math.max(10,cell.radius-5);
-}
-
-// ----- RESIZE -----
-window.addEventListener('resize',()=>{canvas.width=window.innerWidth; canvas.height=window.innerHeight;});
+  ctx
