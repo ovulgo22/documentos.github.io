@@ -1,98 +1,20 @@
 /* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: 'Segoe UI', sans-serif;
-}
+* {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif;}
+body {background:#12122b; color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px;}
+header {text-align:center; margin-bottom:20px;}
+h1 {color:#00ffff;}
+#points {margin-top:10px; font-size:1.5rem;}
 
-body {
-  background: #1e1e2f;
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-  padding: 20px;
-}
+#game-container {display:flex; flex-direction:column; align-items:center; gap:20px;}
+#clickButton {width:200px; height:200px; border-radius:50%; background:linear-gradient(145deg,#00bfff,#004f7f); border:none; color:#fff; font-size:2.5rem; cursor:pointer; transition: transform 0.2s; box-shadow:0 5px 20px rgba(0,0,0,0.4); position:relative;}
+#clickButton:active {transform: scale(0.95);}
 
-h1 {
-  color: #00e0ff;
-  margin-bottom: 20px;
-}
+.upgrades-section, .achievements-section, .events-section {width:100%; max-width:500px; text-align:center;}
+.upgrades {display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:10px;}
+.upgrade-btn {padding:10px 15px; border:none; border-radius:12px; background:#ff7f50; color:#fff; cursor:pointer; transition:0.2s;}
+.upgrade-btn:hover {background:#ff4f20;}
 
-#game-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
+.coin {position:absolute; width:30px; height:30px; background:gold; border-radius:50%; animation:floatUp 1s ease-out forwards; pointer-events:none;}
+@keyframes floatUp {0% {opacity:1; transform: translateY(0);} 100% {opacity:0; transform: translateY(-100px);} }
 
-#clickButton {
-  width: 200px;
-  height: 200px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #00bfff, #004f7f);
-  border: none;
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
-  transition: transform 0.2s;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-  position: relative;
-}
-
-#clickButton:active {
-  transform: scale(0.95);
-}
-
-#points {
-  margin-top: 20px;
-  font-size: 1.5rem;
-}
-
-.upgrades {
-  margin-top: 30px;
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.upgrade {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 10px;
-  background: #ff7f50;
-  color: #fff;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.upgrade:hover {
-  background: #ff4f20;
-}
-
-.coin {
-  position: absolute;
-  width: 30px;
-  height: 30px;
-  background: gold;
-  border-radius: 50%;
-  animation: floatUp 1s ease-out forwards;
-  pointer-events: none;
-}
-
-@keyframes floatUp {
-  0% {opacity: 1; transform: translateY(0);}
-  100% {opacity: 0; transform: translateY(-100px);}
-}
-
-#achievements {
-  margin-top: 40px;
-  text-align: center;
-}
-
-#achievementsList {
-  list-style: none;
-  margin-top: 10px;
-}
+#eventMessage {margin-top:10px; padding:10px; background:#222244; border-radius:10px; min-height:40px;}
