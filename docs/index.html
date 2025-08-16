@@ -3,21 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Clicker Simulator PRO</title>
+  <title>Clicker Simulator Espacial</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1>Clicker Simulator PRO</h1>
-    <div id="points">Moedas: 0</div>
+    <h1>Clicker Simulator Espacial</h1>
+    <div id="points">Energia Cósmica: 0</div>
+    <button id="prestigeBtn">Prestígio Cósmico 🔥</button>
   </header>
 
   <main id="game-container">
-    <button id="clickButton">💰</button>
+    <button id="clickButton">🌑</button>
+
+    <section class="boosts-section">
+      <h2>Boosts Temporários</h2>
+      <div id="boosts"></div>
+    </section>
 
     <section class="upgrades-section">
-      <h2>Upgrades</h2>
-      <div class="upgrades" id="upgradeList"></div>
+      <h2>Árvore de Upgrades</h2>
+      <div id="upgradeList"></div>
     </section>
 
     <section class="achievements-section">
@@ -26,13 +32,23 @@
     </section>
 
     <section class="events-section">
-      <h2>Eventos</h2>
+      <h2>Eventos Espaciais</h2>
       <div id="eventMessage">Nenhum evento ativo</div>
     </section>
   </main>
 
+  <!-- Sons -->
   <audio id="coinSound" src="https://www.soundjay.com/coin/sounds/coin-1.mp3"></audio>
+  <audio id="boostSound" src="https://www.soundjay.com/button/sounds/button-3.mp3"></audio>
+  <audio id="eventSound" src="https://www.soundjay.com/button/sounds/button-10.mp3"></audio>
 
-  <script src="script.js"></script>
+  <!-- Scripts separados -->
+  <script src="click.js"></script>
+  <script src="upgrades.js"></script>
+  <script src="autoclick.js"></script>
+  <script src="events.js"></script>
+  <script src="achievements.js"></script>
+  <script src="prestige.js"></script>
+  <script src="sound.js"></script>
 </body>
 </html>
