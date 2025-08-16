@@ -1,95 +1,93 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu GitHub Docs Avançado</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meu GitHub Docs Responsivo</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="logo">MeuDocs</div>
-        <input type="text" placeholder="Pesquisar..." id="searchInput">
-    </header>
+<header>
+    <div class="logo">MeuDocs</div>
+    <button class="menu-toggle">&#9776;</button>
+    <input type="text" placeholder="Pesquisar..." id="searchInput">
+</header>
 
-    <div class="container">
-        <nav class="sidebar">
-            <ul>
-                <li><a href="#inicio">Início</a></li>
-                <li>
-                    <a href="#git">Git</a>
-                    <ul class="submenu">
-                        <li><a href="#git-basico">Básico</a></li>
-                        <li><a href="#git-avancado">Avançado</a></li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="#github">GitHub</a>
-                    <ul class="submenu">
-                        <li><a href="#repositorios">Repositórios</a></li>
-                        <li><a href="#colaboracao">Colaboração</a></li>
-                    </ul>
-                </li>
-                <li><a href="#pages">GitHub Pages</a></li>
-                <li><a href="#actions">GitHub Actions</a></li>
-                <li><a href="#api">API REST</a></li>
-            </ul>
-        </nav>
+<div class="container">
+    <nav class="sidebar">
+        <ul>
+            <li><a href="#inicio">Início</a></li>
+            <li>
+                <a href="#git" class="has-submenu">Git &#9662;</a>
+                <ul class="submenu">
+                    <li><a href="#git-basico">Básico</a></li>
+                    <li><a href="#git-avancado">Avançado</a></li>
+                </ul>
+            </li>
+            <li>
+                <a href="#github" class="has-submenu">GitHub &#9662;</a>
+                <ul class="submenu">
+                    <li><a href="#repositorios">Repositórios</a></li>
+                    <li><a href="#colaboracao">Colaboração</a></li>
+                </ul>
+            </li>
+            <li><a href="#pages">GitHub Pages</a></li>
+            <li><a href="#actions">GitHub Actions</a></li>
+            <li><a href="#api">API REST</a></li>
+        </ul>
+    </nav>
 
-        <main class="content">
-            <section id="inicio">
-                <h1>Bem-vindo ao Meu GitHub Docs Avançado</h1>
-                <p>Este é um site de documentação inspirado no GitHub Docs, pronto para GitHub Pages, com sidebar fixa e design moderno.</p>
-            </section>
+    <main class="content">
+        <section id="inicio">
+            <h1>Bem-vindo ao Meu GitHub Docs Responsivo</h1>
+            <p>Este site de documentação é inspirado no GitHub Docs, totalmente responsivo e funcional para desktop, tablet e celular.</p>
+        </section>
 
-            <section id="git">
-                <h2>Git</h2>
-                <p>Aprenda Git do básico ao avançado.</p>
+        <section id="git">
+            <h2>Git</h2>
+            <div id="git-basico">
+                <h3>Básico</h3>
+                <p>Aprenda Git com commits, branches e merges.</p>
+            </div>
+            <div id="git-avancado">
+                <h3>Avançado</h3>
+                <p>Rebase, cherry-pick e estratégias avançadas de branching.</p>
+            </div>
+        </section>
 
-                <div id="git-basico">
-                    <h3>Básico</h3>
-                    <p>Conceitos iniciais: commits, branches, merges.</p>
-                </div>
+        <section id="github">
+            <h2>GitHub</h2>
+            <div id="repositorios">
+                <h3>Repositórios</h3>
+                <p>Crie, clone e gerencie repositórios.</p>
+            </div>
+            <div id="colaboracao">
+                <h3>Colaboração</h3>
+                <p>Pull requests, issues e revisão de código.</p>
+            </div>
+        </section>
 
-                <div id="git-avancado">
-                    <h3>Avançado</h3>
-                    <p>Rebase, cherry-pick e estratégias de branching.</p>
-                </div>
-            </section>
+        <section id="pages">
+            <h2>GitHub Pages</h2>
+            <p>Hospede sites estáticos diretamente do seu repositório GitHub.</p>
+        </section>
 
-            <section id="github">
-                <h2>GitHub</h2>
-                <div id="repositorios">
-                    <h3>Repositórios</h3>
-                    <p>Criação, clonagem e gerenciamento de repositórios.</p>
-                </div>
-                <div id="colaboracao">
-                    <h3>Colaboração</h3>
-                    <p>Pull requests, issues e revisão de código.</p>
-                </div>
-            </section>
+        <section id="actions">
+            <h2>GitHub Actions</h2>
+            <p>Automatize fluxos de trabalho com CI/CD.</p>
+        </section>
 
-            <section id="pages">
-                <h2>GitHub Pages</h2>
-                <p>Hospede sites estáticos diretamente do seu repositório.</p>
-            </section>
+        <section id="api">
+            <h2>API REST</h2>
+            <p>Integre e automatize tarefas via API REST do GitHub.</p>
+        </section>
+    </main>
+</div>
 
-            <section id="actions">
-                <h2>GitHub Actions</h2>
-                <p>Automatize fluxos de trabalho com CI/CD.</p>
-            </section>
+<footer>
+    <p>© 2025 Meu GitHub Docs</p>
+</footer>
 
-            <section id="api">
-                <h2>API REST</h2>
-                <p>Automatize tarefas e integre aplicações via API REST do GitHub.</p>
-            </section>
-        </main>
-    </div>
-
-    <footer>
-        <p>© 2025 Meu GitHub Docs Avançado</p>
-    </footer>
-
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
