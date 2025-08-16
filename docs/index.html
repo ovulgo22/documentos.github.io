@@ -3,26 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Evolution Infinity - Avançado</title>
+<title>Evolution Infinity Final</title>
 <style>
   body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
     overflow: hidden;
-    background: #0d0d0d;
+    background: #000;
     color: #f0f0f0;
   }
   #game-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
   }
-  h1 { margin: 10px; font-size: 2em; text-align: center; }
-  #dna-counter { font-size: 1.5em; margin: 5px; text-align: center; }
+  h1 { margin: 10px; font-size: 2em; text-align: center; z-index: 5; position: relative;}
+  #dna-counter { font-size: 1.5em; margin: 5px; text-align: center; z-index:5; position: relative;}
   #click-btn {
     font-size: 1.5em;
     padding: 20px 40px;
@@ -32,10 +32,10 @@
     background-color: #1e90ff;
     color: #fff;
     cursor: pointer;
-    transition: transform 0.1s;
+    z-index:5; position: relative;
   }
   #click-btn:active { transform: scale(0.95); }
-  #upgrades { display: flex; flex-wrap: wrap; justify-content: center; margin: 10px; z-index: 2; position: relative; }
+  #upgrades { display: flex; flex-wrap: wrap; justify-content: center; margin: 10px; z-index:5; position: relative; }
   .upgrade {
     background: #333;
     padding: 12px;
@@ -47,28 +47,49 @@
     transition: 0.2s;
   }
   .upgrade.unlocked { background: #28a745; color: #fff; }
-  #event-log { max-width: 400px; margin: 10px; text-align: center; font-size: 0.9em; min-height: 50px; }
-  #organism-img { max-width: 200px; margin: 10px; transition: transform 1s ease; z-index: 2; position: relative; }
-  canvas { position: absolute; top: 0; left: 0; z-index: 1; pointer-events: none; }
+  #event-log { max-width: 400px; margin: 10px; text-align: center; font-size: 0.9em; min-height: 50px; z-index:5; position: relative;}
+  #organism-img { max-width: 200px; margin: 10px; transition: transform 1s ease; z-index:5; position: relative; }
+  canvas { position: absolute; top: 0; left: 0; z-index:1; pointer-events: none; }
+  #parallax-bg { position:absolute; width:100%; height:100%; top:0; left:0; z-index:0; overflow:hidden;}
+  .layer { position:absolute; width:100%; height:100%; background-repeat:no-repeat; background-size:cover; }
+  /* Sprites animadas simples via keyframes */
+  .sprite {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background-size: cover;
+    animation: float 3s ease-in-out infinite alternate;
+  }
+  @keyframes float {
+    0% { transform: translateY(0px);}
+    100% { transform: translateY(-15px);}
+  }
 </style>
 </head>
 <body>
-
 <div id="game-container">
-<h1>Evolution Infinity</h1>
-<div id="dna-counter">DNA: 0</div>
+<h1>Evolution Infinity Final</h1>
+<div id="dna-counter">DNA: 0 | Prestige: 0</div>
 <button id="click-btn">Gerar DNA</button>
 <img id="organism-img" src="https://i.imgur.com/8bUq9Hs.png" alt="Organismo">
 <div id="upgrades"></div>
 <div id="event-log"></div>
+<div id="parallax-bg">
+  <div class="layer" id="layer1"></div>
+  <div class="layer" id="layer2"></div>
+  <div class="layer" id="layer3"></div>
+</div>
 <canvas id="particle-canvas"></canvas>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
 <script>
 // ===== Sons =====
 const clickSound = new Howl({ src: ['https://freesound.org/data/previews/256/256113_3263906-lq.mp3'], volume: 0.3 });
 const unlockSound = new Howl({ src: ['https://freesound.org/data/previews/320/320655_5260872-lq.mp3'], volume: 0.3 });
+const bgMusic = new Howl({ src:['https://freesound.org/data/previews/570/570201_10098814-lq.mp3'], loop:true, volume:0.2 });
+bgMusic.play();
 
 // ===== Dados do jogo =====
 let dna = parseFloat(localStorage.getItem('dna')) || 0;
@@ -77,159 +98,164 @@ let dnaPerSecond = 0.1;
 let prestigePoints = parseInt(localStorage.getItem('prestige')) || 0;
 
 const upgrades = [
-  {name: 'Célula Multicelular', cost: 100, unlocked: false, img: 'https://i.imgur.com/Qr0s9tZ.png', bg: '#1a1aff'},
-  {name: 'Peixe', cost: 500, unlocked: false, img: 'https://i.imgur.com/4vPzJzi.png', bg: '#0077ff'},
-  {name: 'Dinossauro', cost: 2000, unlocked: false, img: 'https://i.imgur.com/7t5VY8J.png', bg: '#228B22'},
-  {name: 'Mamífero', cost: 5000, unlocked: false, img: 'https://i.imgur.com/Ek2vWni.png', bg: '#8B4513'},
-  {name: 'Humano', cost: 15000, unlocked: false, img: 'https://i.imgur.com/q4V2GfZ.png', bg: '#FFD700'},
-  {name: 'Singularidade IA', cost: 50000, unlocked: false, img: 'https://i.imgur.com/0H6hG2Q.png', bg: '#FF1493'},
+  {name: 'Célula Multicelular', cost: 100, unlocked: false, img: 'https://i.imgur.com/Qr0s9tZ.png', bg: 'linear-gradient(to bottom,#001a33,#004080)'},
+  {name: 'Peixe', cost: 500, unlocked: false, img: 'https://i.imgur.com/4vPzJzi.png', bg: 'linear-gradient(to bottom,#004d00,#00b300)'},
+  {name: 'Dinossauro', cost: 2000, unlocked: false, img: 'https://i.imgur.com/7t5VY8J.png', bg: 'linear-gradient(to bottom,#4d2600,#b35900)'},
+  {name: 'Mamífero', cost: 5000, unlocked: false, img: 'https://i.imgur.com/Ek2vWni.png', bg: 'linear-gradient(to bottom,#663399,#cc66ff)'},
+  {name: 'Humano', cost: 15000, unlocked: false, img: 'https://i.imgur.com/q4V2GfZ.png', bg: 'linear-gradient(to bottom,#666600,#ffff33)'},
+  {name: 'Singularidade IA', cost: 50000, unlocked: false, img: 'https://i.imgur.com/0H6hG2Q.png', bg: 'linear-gradient(to bottom,#660066,#ff33ff)'},
 ];
 
-// ===== Canvas Partículas =====
+// ===== Canvas Partículas e Mini-jogos =====
 const canvas = document.getElementById('particle-canvas');
 const ctx = canvas.getContext('2d');
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 let particles = [];
+let miniSprites = [];
 
-function createParticles(x, y, color='#1e90ff', count=15){
-  for(let i=0; i<count; i++){
+function createParticles(x, y, color='#1e90ff', count=25){
+  for(let i=0;i<count;i++){
     particles.push({
-      x, y,
-      vx: (Math.random()-0.5)*4,
-      vy: (Math.random()-0.5)*4,
-      alpha: 1,
-      radius: Math.random()*4+2,
+      x,y,
+      vx:(Math.random()-0.5)*6,
+      vy:(Math.random()-0.5)*6,
+      alpha:1,
+      radius:Math.random()*5+2,
       color
     });
   }
 }
-
 function drawParticles(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
-  for(let i=particles.length-1; i>=0; i--){
-    let p = particles[i];
-    ctx.globalAlpha = p.alpha;
+  for(let i=particles.length-1;i>=0;i--){
+    let p=particles[i];
+    ctx.globalAlpha=p.alpha;
     ctx.beginPath();
     ctx.arc(p.x,p.y,p.radius,0,Math.PI*2);
-    ctx.fillStyle = p.color;
+    ctx.fillStyle=p.color;
     ctx.fill();
-    p.x += p.vx;
-    p.y += p.vy;
-    p.alpha -= 0.02;
-    if(p.alpha <=0) particles.splice(i,1);
+    p.x+=p.vx; p.y+=p.vy; p.alpha-=0.02;
+    if(p.alpha<=0) particles.splice(i,1);
   }
+  // Mini-sprites
+  miniSprites.forEach((s,i)=>{
+    ctx.globalAlpha=s.alpha;
+    ctx.drawImage(s.img,s.x,s.y,s.w,s.h);
+    s.y-=0.5; s.alpha-=0.01;
+    if(s.alpha<=0) miniSprites.splice(i,1);
+  });
   requestAnimationFrame(drawParticles);
 }
 drawParticles();
 
+// ===== Parallax Fundo =====
+const layers=[document.getElementById('layer1'),document.getElementById('layer2'),document.getElementById('layer3')];
+layers[0].style.backgroundImage='url(https://i.imgur.com/3aXQJCo.png)';
+layers[1].style.backgroundImage='url(https://i.imgur.com/5QqkXv7.png)';
+layers[2].style.backgroundImage='url(https://i.imgur.com/6V6WwHV.png)';
+function updateParallax(){
+  layers.forEach((layer,i)=>{
+    layer.style.transform=`translateY(${Math.sin(Date.now()/2000+i)*10}px)`;
+  });
+  requestAnimationFrame(updateParallax);
+}
+updateParallax();
+
 // ===== Funções do jogo =====
 function updateUI(){
-  document.getElementById('dna-counter').innerText = `DNA: ${Math.floor(dna)} | Prestige: ${prestigePoints}`;
-  const upgradesDiv = document.getElementById('upgrades');
-  upgradesDiv.innerHTML = '';
-  upgrades.forEach((u, index)=>{
-    const div = document.createElement('div');
-    div.className = 'upgrade' + (u.unlocked ? ' unlocked' : '');
-    div.style.backgroundColor = u.unlocked ? u.bg : '#333';
-    div.innerText = `${u.name}\nCusto: ${u.cost}`;
-    div.onclick = ()=> buyUpgrade(index);
+  document.getElementById('dna-counter').innerText=`DNA: ${Math.floor(dna)} | Prestige: ${prestigePoints}`;
+  const upgradesDiv=document.getElementById('upgrades');
+  upgradesDiv.innerHTML='';
+  upgrades.forEach((u,index)=>{
+    const div=document.createElement('div');
+    div.className='upgrade'+(u.unlocked?' unlocked':'');
+    div.style.background=u.unlocked?u.bg:'#333';
+    div.innerText=`${u.name}\nCusto: ${u.cost}`;
+    div.onclick=()=>buyUpgrade(index);
     upgradesDiv.appendChild(div);
   });
 }
 
 function addDNA(amount){
-  dna += amount;
-  createParticles(window.innerWidth/2, window.innerHeight/2, '#00FF00', 20);
+  dna+=amount;
+  createParticles(window.innerWidth/2,window.innerHeight/2,'#00FF00',25);
+  // mini-sprite bônus
+  const img=new Image();
+  img.src='https://i.imgur.com/8bUq9Hs.png';
+  miniSprites.push({x:Math.random()*canvas.width,y:canvas.height-100,img,w:50,h:50,alpha:1});
   updateUI();
-  localStorage.setItem('dna', dna);
+  localStorage.setItem('dna',dna);
 }
 
 function clickDNA(){
   addDNA(dnaPerClick);
   clickSound.play();
+  gsap.from("#click-btn",{scale:1.2,duration:0.1,yoyo:true,repeat:1});
 }
 
-function autoDNA(){
-  addDNA(dnaPerSecond);
-  requestAnimationFrame(autoDNA);
-}
+function autoDNA(){ addDNA(dnaPerSecond); requestAnimationFrame(autoDNA); }
 
 function buyUpgrade(index){
-  const u = upgrades[index];
-  if(dna >= u.cost && !u.unlocked){
-    dna -= u.cost;
-    u.unlocked = true;
-    dnaPerClick += u.cost*0.001;
-    dnaPerSecond += u.cost*0.0005;
-    document.getElementById('organism-img').src = u.img;
-    document.getElementById('game-container').style.background = u.bg;
+  const u=upgrades[index];
+  if(dna>=u.cost && !u.unlocked){
+    dna-=u.cost; u.unlocked=true;
+    dnaPerClick+=u.cost*0.001; dnaPerSecond+=u.cost*0.0005;
+    document.getElementById('organism-img').src=u.img;
+    document.getElementById('game-container').style.background=u.bg;
     addEvent(`Upgrade desbloqueado: ${u.name}!`);
     unlockSound.play();
+    gsap.from("#organism-img",{scale:1.3,duration:0.5,yoyo:true,repeat:1});
     updateUI();
   }
 }
 
 function addEvent(text){
-  const log = document.getElementById('event-log');
-  log.innerText = text;
-  setTimeout(()=>{ log.innerText=''; }, 5000);
+  const log=document.getElementById('event-log');
+  log.innerText=text;
+  gsap.fromTo(log,{opacity:0},{opacity:1,duration:0.3});
+  setTimeout(()=>{ gsap.to(log,{opacity:0,duration:0.5}); },4000);
 }
 
 // Eventos aleatórios
 function randomEvent(){
-  const events = [
+  const events=[
     {text:'Mutaçao! DNA extra ganho!', effect:()=>addDNA(50)},
-    {text:'Catástrofe! Perdeu metade do DNA!', effect:()=>{ dna/=2; updateUI(); }},
+    {text:'Catástrofe! Perdeu metade do DNA!', effect:()=>{dna/=2;updateUI();}},
   ];
-  const e = events[Math.floor(Math.random()*events.length)];
-  e.effect();
-  addEvent(e.text);
-  setTimeout(randomEvent, 30000);
+  const e=events[Math.floor(Math.random()*events.length)];
+  e.effect(); addEvent(e.text);
+  setTimeout(randomEvent,30000);
 }
 
-// Mini-game aleatório
+// Mini-games aleatórios
 function miniGame(){
-  if(Math.random()<0.05){
-    const bonus = Math.floor(Math.random()*500+100);
-    addDNA(bonus);
-    addEvent(`Mini-game: DNA bônus +${bonus}!`);
+  if(Math.random()<0.1){
+    const bonus=Math.floor(Math.random()*500+100);
+    addDNA(bonus); addEvent(`Mini-game: DNA bônus +${bonus}!`);
   }
-  setTimeout(miniGame, 60000);
+  setTimeout(miniGame,60000);
 }
 
 // Prestígio
 function prestige(){
   if(dna>=50000){
-    prestigePoints += Math.floor(dna/50000);
-    dna = 0;
-    upgrades.forEach(u=> u.unlocked=false);
-    document.getElementById('organism-img').src = 'https://i.imgur.com/8bUq9Hs.png';
-    document.getElementById('game-container').style.background = '#0d0d0d';
-    localStorage.setItem('prestige', prestigePoints);
+    prestigePoints+=Math.floor(dna/50000);
+    dna=0;
+    upgrades.forEach(u=>u.unlocked=false);
+    document.getElementById('organism-img').src='https://i.imgur.com/8bUq9Hs.png';
+    document.getElementById('game-container').style.background='#000';
+    localStorage.setItem('prestige',prestigePoints);
     addEvent('Prestígio realizado! Pontos ganhos: '+Math.floor(prestigePoints));
     updateUI();
   }
 }
 
 // ===== Inicialização =====
-document.getElementById('click-btn').addEventListener('click', clickDNA);
-updateUI();
-autoDNA();
-randomEvent();
-miniGame();
-
-// Evento de prestígio ao clicar longo
-document.getElementById('click-btn').addEventListener('contextmenu', (e)=>{
-  e.preventDefault();
-  prestige();
-});
-
-window.addEventListener('resize', ()=>{
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-});
+document.getElementById('click-btn').addEventListener('click',clickDNA);
+updateUI(); autoDNA(); randomEvent(); miniGame();
+document.getElementById('click-btn').addEventListener('contextmenu',(e)=>{e.preventDefault();prestige();});
+window.addEventListener('resize',()=>{canvas.width=window.innerWidth;canvas.height=window.innerHeight;});
 </script>
-
 </body>
 </html>
