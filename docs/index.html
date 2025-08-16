@@ -2,46 +2,221 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Clicker Simulator Espacial AAA Ultra</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Agar.io Avançado Mobile</title>
+<style>
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #1a1a1a;
+    font-family: Arial, sans-serif;
+  }
+  canvas {
+    display: block;
+    background: #222;
+  }
+  #leaderboard {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    padding: 10px;
+    border-radius: 10px;
+    width: 150px;
+    font-size: 14px;
+  }
+  #leaderboard h2 {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+  }
+  #leaderboard ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+</style>
 </head>
 <body>
-<div id="menu">
-    <h1>Clicker Simulator Espacial AAA Ultra</h1>
-    <button id="startGame">Iniciar Jogo</button>
-    <button id="openLeaderboard">Leaderboard</button>
-    <button id="openAchievements">Conquistas</button>
-    <button id="openPrestige">Prestígio</button>
+<canvas id="game"></canvas>
+<div id="leaderboard">
+  <h2>Leaderboard</h2>
+  <ul id="leaders"></ul>
 </div>
-<div id="game" style="display:none;">
-    <div id="hud">
-        <div id="points">Energia Cósmica: 0</div>
-        <div id="multiplier">Multiplicador: x1</div>
-        <div id="prestige">Prestígio: 0</div>
-        <div id="equippedItem">Item Equipado: Nenhum</div>
-    </div>
-    <button id="clickButton">🌑 Clique!</button>
-    <div id="orbitalUpgrades"></div>
-    <div id="boosts"></div>
-    <div id="achievementsList"></div>
-    <button id="prestigeBtn">Prestígio Cósmico</button>
-    <div id="leaderboardContainer" style="display:none;"></div>
-</div>
-<audio id="coinSound" src="assets/sounds/coin.mp3"></audio>
-<audio id="boostSound" src="assets/sounds/boost.mp3"></audio>
-<audio id="eventSound" src="assets/sounds/event.mp3"></audio>
-<script src="js/spaceCanvas.js"></script>
-<script src="js/particles.js"></script>
-<script src="js/mainMenu.js"></script>
-<script src="js/click.js"></script>
-<script src="js/upgrades.js"></script>
-<script src="js/autoclick.js"></script>
-<script src="js/events.js"></script>
-<script src="js/achievements.js"></script>
-<script src="js/prestige.js"></script>
-<script src="js/customization.js"></script>
-<script src="js/leaderboard.js"></script>
-<script src="js/sound.js"></script>
+<script>
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const world = {
+  width: 3000,
+  height: 3000,
+  pellets: [],
+  bots: [],
+  player: null
+};
+
+let touchX = null;
+let touchY = null;
+
+// Player
+class Cell {
+  constructor(x, y, radius, color, name="Player") {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.name = name;
+    this.speed = 3;
+  }
+  
+  draw() {
+    ctx.beginPath();
+    ctx.fillStyle = this.color;
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+    ctx.fill();
+    ctx.fillStyle = 'white';
+    ctx.font = `${Math.max(12, this.radius/2)}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.fillText(this.name, this.x, this.y+4);
+  }
+  
+  move() {
+    if(touchX !== null && touchY !== null) {
+      let dx = touchX - canvas.width/2;
+      let dy = touchY - canvas.height/2;
+      const length = Math.hypot(dx, dy);
+      if(length > 10) { // zona morta
+        dx /= length; dy /= length;
+        this.x += dx * this.speed * (50/this.radius);
+        this.y += dy * this.speed * (50/this.radius);
+      }
+    }
+    // Limites
+    this.x = Math.max(this.radius, Math.min(world.width - this.radius, this.x));
+    this.y = Math.max(this.radius, Math.min(world.height - this.radius, this.y));
+  }
+  
+  eat(target) {
+    const dist = Math.hypot(this.x - target.x, this.y - target.y);
+    if(dist < this.radius + target.radius) {
+      this.radius += target.radius * 0.2;
+      return true;
+    }
+    return false;
+  }
+}
+
+// Pellet
+class Pellet {
+  constructor(x, y, radius, color="#ff0") {
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+  }
+  
+  draw() {
+    ctx.beginPath();
+    ctx.fillStyle = this.color;
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI*2);
+    ctx.fill();
+  }
+}
+
+// Bot
+class Bot extends Cell {
+  constructor(x, y, radius, color, name="Bot") {
+    super(x, y, radius, color, name);
+  }
+  
+  ai() {
+    if(world.pellets.length === 0) return;
+    let target = world.pellets[Math.floor(Math.random() * world.pellets.length)];
+    let dx = target.x - this.x;
+    let dy = target.y - this.y;
+    const dist = Math.hypot(dx, dy);
+    dx /= dist; dy /= dist;
+    this.x += dx * this.speed * (50/this.radius);
+    this.y += dy * this.speed * (50/this.radius);
+  }
+}
+
+function init() {
+  world.player = new Cell(world.width/2, world.height/2, 30, "#00f", "Você");
+  for(let i=0;i<300;i++) {
+    world.pellets.push(new Pellet(Math.random()*world.width, Math.random()*world.height, 5));
+  }
+  for(let i=0;i<5;i++) {
+    world.bots.push(new Bot(Math.random()*world.width, Math.random()*world.height, 20, "#f00", "Bot"+(i+1)));
+  }
+}
+
+function update() {
+  world.player.move();
+  world.bots.forEach(bot => {
+    bot.ai();
+    world.pellets = world.pellets.filter(p => !bot.eat(p));
+  });
+  world.pellets = world.pellets.filter(p => !world.player.eat(p));
+}
+
+function draw() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const camX = world.player.x - canvas.width/2;
+  const camY = world.player.y - canvas.height/2;
+
+  world.pellets.forEach(p => {ctx.save(); ctx.translate(-camX,-camY); p.draw(); ctx.restore();});
+  world.bots.forEach(b => {ctx.save(); ctx.translate(-camX,-camY); b.draw(); ctx.restore();});
+  ctx.save(); ctx.translate(-camX,-camY); world.player.draw(); ctx.restore();
+  
+  updateLeaderboard();
+}
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+function updateLeaderboard() {
+  const allCells = [world.player, ...world.bots];
+  allCells.sort((a,b) => b.radius - a.radius);
+  const leaders = document.getElementById('leaders');
+  leaders.innerHTML = '';
+  for(let i=0;i<Math.min(5, allCells.length);i++) {
+    let li = document.createElement('li');
+    li.textContent = `${allCells[i].name} (${Math.round(allCells[i].radius)})`;
+    leaders.appendChild(li);
+  }
+}
+
+// Touch Controls
+canvas.addEventListener('touchstart', e => {
+  const touch = e.touches[0];
+  touchX = touch.clientX;
+  touchY = touch.clientY;
+});
+canvas.addEventListener('touchmove', e => {
+  e.preventDefault();
+  const touch = e.touches[0];
+  touchX = touch.clientX;
+  touchY = touch.clientY;
+});
+canvas.addEventListener('touchend', e => {
+  touchX = null;
+  touchY = null;
+});
+
+window.addEventListener('resize', () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+});
+
+init();
+gameLoop();
+</script>
 </body>
 </html>
