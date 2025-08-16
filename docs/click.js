@@ -8,8 +8,9 @@ const coinSound = document.getElementById('coinSound');
 clickButton.addEventListener('click', (e)=>{
     points += multiplier;
     updatePoints();
-    spawnCoin(e.clientX - 15, e.clientY - 15);
-    spawnParticles(e.clientX, e.clientY, 5);
+    spawnCoin(e.clientX-15, e.clientY-15);
+    spawnParticles(e.clientX, e.clientY, 8);
+    pulseButton();
 });
 
 function updatePoints(){
@@ -17,9 +18,9 @@ function updatePoints(){
     localStorage.setItem('points', points);
 }
 
-function spawnCoin(x, y){
+function spawnCoin(x,y){
     const coin = document.createElement('div');
-    coin.className = 'coin';
+    coin.className='coin';
     coin.style.left = `${x}px`;
     coin.style.top = `${y}px`;
     document.body.appendChild(coin);
@@ -27,17 +28,22 @@ function spawnCoin(x, y){
     setTimeout(()=>coin.remove(),1000);
 }
 
-function spawnParticles(x, y, amount){
+function spawnParticles(x,y,amount){
     for(let i=0;i<amount;i++){
         const p = document.createElement('div');
         p.className='particle';
-        p.style.left = `${x}px`;
-        p.style.top = `${y}px`;
+        p.style.left=`${x}px`;
+        p.style.top=`${y}px`;
         p.style.setProperty('--randX', Math.random());
         p.style.setProperty('--randY', Math.random());
         document.body.appendChild(p);
         setTimeout(()=>p.remove(),800);
     }
+}
+
+function pulseButton(){
+    clickButton.style.boxShadow='0 0 60px #0ff, 0 0 100px #0ff';
+    setTimeout(()=>clickButton.style.boxShadow='0 0 20px #0ff',150);
 }
 
 // Carregar progresso
