@@ -1,23 +1,30 @@
 * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI', sans-serif;}
-body {background:#0a0a1a; color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; overflow-x:hidden;}
+body {background:#0a0a1a; color:#fff; display:flex; flex-direction:column; align-items:center; min-height:100vh; padding:20px; overflow-x:hidden; position:relative;}
+#spaceCanvas {position:fixed; top:0; left:0; width:100%; height:100%; z-index:-1;}
 header {text-align:center; margin-bottom:20px;}
-h1 {color:#00ffff;}
+h1 {color:#00ffff; text-shadow:0 0 15px #0ff;}
 #points {margin-top:10px; font-size:1.5rem;}
-#prestigeBtn {margin-top:10px; padding:10px 20px; border:none; border-radius:12px; background:#ff4500; cursor:pointer; font-weight:bold;}
+#prestigeBtn {margin-top:10px; padding:10px 20px; border:none; border-radius:12px; background:#ff4500; cursor:pointer; font-weight:bold; box-shadow:0 0 20px #ff4500; transition:0.3s;}
+#prestigeBtn:hover {box-shadow:0 0 35px #ff7f50;}
 
 #game-container {display:flex; flex-direction:column; align-items:center; gap:20px; width:100%; max-width:700px;}
-#clickButton {width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,#004f7f,#000033); border:none; color:#fff; font-size:3rem; cursor:pointer; transition: transform 0.2s; box-shadow:0 5px 25px rgba(0,0,0,0.5); position:relative;}
-#clickButton:active {transform: scale(0.95);}
+#clickArea {position:relative;}
+#clickButton {width:200px; height:200px; border-radius:50%; background:radial-gradient(circle,#004f7f,#000033); border:none; color:#fff; font-size:3rem; cursor:pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow:0 0 20px #0ff; z-index:1;}
+#clickButton:active {transform: scale(0.95); box-shadow:0 0 40px #0ff;}
+
+#orbitalUpgrades {position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none;}
 
 .upgrades-section, .boosts-section, .achievements-section, .events-section {width:100%; text-align:center; margin-top:20px;}
-#upgradeList, #boosts {display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:10px;}
-.upgrade-btn, .boost-btn {padding:10px 15px; border:none; border-radius:12px; background:#ff7f50; color:#fff; cursor:pointer; transition:0.2s;}
-.upgrade-btn:hover, .boost-btn:hover {background:#ff4f20;}
+#boosts {display:flex; flex-wrap:wrap; gap:10px; justify-content:center; margin-top:10px;}
+.boost-btn {padding:10px 15px; border:none; border-radius:12px; background:#ff7f50; color:#fff; cursor:pointer; box-shadow:0 0 10px #ff7f50; transition:0.3s;}
+.boost-btn:hover {box-shadow:0 0 20px #ff4f20; transform:scale(1.05);}
+
+#achievementsList li {color:#0ff; text-shadow:0 0 10px #0ff; margin:5px 0;}
 
 .coin, .particle {position:absolute; width:30px; height:30px; border-radius:50%; pointer-events:none;}
 .coin {background:gold; animation:floatUp 1s ease-out forwards;}
 .particle {background:cyan; animation:particleMove 0.8s ease-out forwards;}
-
 @keyframes floatUp {0% {opacity:1; transform: translateY(0);} 100% {opacity:0; transform: translateY(-120px);} }
 @keyframes particleMove {0% {opacity:1; transform: translate(0,0) scale(1);} 100% {opacity:0; transform: translate(calc(50px * var(--randX)), calc(-50px * var(--randY))) scale(0);} }
-#eventMessage {margin-top:10px; padding:10px; background:#222244; border-radius:10px; min-height:40px;}
+
+#eventMessage {margin-top:10px; padding:10px; background:#222244; border-radius:10px; min-height:40px; box-shadow:0 0 10px #0ff;}
